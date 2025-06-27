@@ -2,45 +2,270 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>InitData Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram WebApp InitData Viewer</title>
   <style>
-    body {
-      font-family: monospace;
-      background: #111;
-      color: #0f0;
-      padding: 20px;
+    :root {
+      --bg-color: #1a1a2e;
+      --card-color: #16213e;
+      --primary-color: #0f3460;
+      --accent-color: #00b4d8;
+      --text-color: #e6f7ff;
+      --error-color: #ff6b6b;
+      --success-color: #51e898;
     }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      padding: 20px;
+      line-height: 1.6;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: var(--accent-color);
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: 300;
+    }
+    
+    .card {
+      background: var(--card-color);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-title {
+      color: var(--accent-color);
+      margin-top: 0;
+      border-bottom: 1px solid var(--primary-color);
+      padding-bottom: 10px;
+      font-size: 1.2em;
+    }
+    
     pre {
-      background: #222;
+      background: rgba(0, 0, 0, 0.3);
       padding: 15px;
       border-radius: 8px;
       white-space: pre-wrap;
       word-break: break-word;
+      overflow-x: auto;
+      font-family: 'Courier New', Courier, monospace;
+      border-left: 3px solid var(--accent-color);
+    }
+    
+    .status {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    .success {
+      background-color: rgba(81, 232, 152, 0.2);
+      border: 1px solid var(--success-color);
+      color: var(--success-color);
+    }
+    
+    .error {
+      background-color: rgba(255, 107, 107, 0.2);
+      border: 1px solid var(--error-color);
+      color: var(--error-color);
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .info-item {
+      background: rgba(15, 52, 96, 0.3);
+      padding: 12px;
+      border-radius: 8px;
+    }
+    
+    .info-label {
+      font-size: 0.8em;
+      opacity: 0.8;
+      margin-bottom: 5px;
+    }
+    
+    .info-value {
+      font-weight: bold;
+      word-break: break-all;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .copy-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      float: right;
+      transition: background 0.3s;
+    }
+    
+    .copy-btn:hover {
+      background: var(--accent-color);
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      opacity: 0.7;
+      font-size: 0.9em;
     }
   </style>
 </head>
 <body>
-  <h1>Идёт загрузка initData...</h1>
-  <pre id="output">Ожидание...</pre>
+  <h1>Telegram WebApp Data Inspector</h1>
+  
+  <div id="status-container">
+    <!-- Status will be inserted here by JS -->
+  </div>
+  
+  <div id="data-container" class="hidden">
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">Platform</div>
+        <div class="info-value" id="platform-value">-</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Theme</div>
+        <div class="info-value" id="theme-value">-</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Viewport</div>
+        <div class="info-value" id="viewport-value">-</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Language</div>
+        <div class="info-value" id="language-value">-</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2 class="card-title">WebApp User Data <button class="copy-btn" onclick="copyToClipboard('user-data')">Copy</button></h2>
+      <pre id="user-data">Loading...</pre>
+    </div>
+    
+    <div class="card">
+      <h2 class="card-title">Raw InitData <button class="copy-btn" onclick="copyToClipboard('init-data')">Copy</button></h2>
+      <pre id="init-data">Loading...</pre>
+    </div>
+    
+    <div class="card">
+      <h2 class="card-title">Browser Information <button class="copy-btn" onclick="copyToClipboard('browser-info')">Copy</button></h2>
+      <pre id="browser-info">Loading...</pre>
+    </div>
+  </div>
+  
+  <footer>
+    Open this page via: https://t.me/ViniRemAdmPan_bot?startapp
+  </footer>
 
   <script>
+    function copyToClipboard(elementId) {
+      const element = document.getElementById(elementId);
+      const text = element.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = element.previousElementSibling;
+        btn.textContent = 'Copied!';
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+        }, 2000);
+      });
+    }
+    
+    function displayStatus(isSuccess, message) {
+      const statusContainer = document.getElementById('status-container');
+      statusContainer.innerHTML = `
+        <div class="status ${isSuccess ? 'success' : 'error'}">
+          ${message}
+        </div>
+      `;
+    }
+    
+    function formatDate(timestamp) {
+      if (!timestamp) return '-';
+      const date = new Date(timestamp * 1000);
+      return date.toLocaleString();
+    }
+    
     window.addEventListener('load', () => {
-      const output = document.getElementById('output');
-
+      const statusContainer = document.getElementById('status-container');
+      const dataContainer = document.getElementById('data-container');
+      
       if (window.Telegram?.WebApp) {
-        const data = {
-          initData: Telegram.WebApp.initData,
-          parsed: Telegram.WebApp.initDataUnsafe,
-          userAgent: navigator.userAgent
+        // Basic WebApp info
+        document.getElementById('platform-value').textContent = Telegram.WebApp.platform || 'Unknown';
+        document.getElementById('theme-value').textContent = Telegram.WebApp.colorScheme || 'Unknown';
+        document.getElementById('viewport-value').textContent = `${window.innerWidth} × ${window.innerHeight}`;
+        document.getElementById('language-value').textContent = Telegram.WebApp.initDataUnsafe?.user?.language_code || navigator.language || 'Unknown';
+        
+        // Prepare user data
+        const userData = Telegram.WebApp.initDataUnsafe?.user || {};
+        const formattedUserData = {
+          id: userData.id,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          username: userData.username,
+          language_code: userData.language_code,
+          is_premium: userData.is_premium,
+          allows_write_to_pm: userData.allows_write_to_pm,
+          photo_url: userData.photo_url,
+          auth_date: formatDate(userData.auth_date)
         };
-
-        output.textContent = JSON.stringify(data, null, 2);
+        
+        document.getElementById('user-data').textContent = JSON.stringify(formattedUserData, null, 2);
+        document.getElementById('init-data').textContent = Telegram.WebApp.initData || 'No initData available';
+        
+        // Browser info
+        const browserInfo = {
+          userAgent: navigator.userAgent,
+          platform: navigator.platform,
+          screen: `${window.screen.width} × ${window.screen.height}`,
+          viewport: `${window.innerWidth} × ${window.innerHeight}`,
+          colorDepth: window.screen.colorDepth,
+          pixelRatio: window.devicePixelRatio,
+          cookiesEnabled: navigator.cookieEnabled,
+          languages: navigator.languages,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          date: new Date().toString()
+        };
+        
+        document.getElementById('browser-info').textContent = JSON.stringify(browserInfo, null, 2);
+        
+        displayStatus(true, '✅ Telegram WebApp detected successfully! All data is available.');
+        dataContainer.classList.remove('hidden');
       } else {
-        output.textContent = `❌ Telegram WebApp API не найден.\n\n` +
-          `UserAgent: ${navigator.userAgent}\n\n` +
-          `Убедитесь, что бот открыт через ссылку:\n` +
-          `https://t.me/ViniRemAdmPan_bot?startapp\n` +
-          `и настроен домен через /setdomain`;
+        const errorMessage = `Telegram WebApp API not detected.\n\n` +
+          `Make sure you're opening this page via the Telegram bot link:\n` +
+          `https://t.me/ViniRemAdmPan_bot?startapp\n\n` +
+          `Also ensure the domain is properly configured with /setdomain command.\n\n` +
+          `Current UserAgent: ${navigator.userAgent}`;
+        
+        displayStatus(false, errorMessage);
+      }
+    });
+    
+    // Update viewport size on resize
+    window.addEventListener('resize', () => {
+      if (window.Telegram?.WebApp) {
+        document.getElementById('viewport-value').textContent = `${window.innerWidth} × ${window.innerHeight}`;
       }
     });
   </script>
