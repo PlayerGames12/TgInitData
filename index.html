@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>InitData Viewer</title>
   <style>
     body {
@@ -27,18 +27,21 @@
     window.addEventListener('load', () => {
       const output = document.getElementById('output');
 
-    if (window.Telegram?.WebApp) {
-      const data = {
-        initData: Telegram.WebApp.initData,
-        parsed: Telegram.WebApp.initDataUnsafe
-      };
-      output.textContent = JSON.stringify(data, null, 2);
-    } else {
-      output.textContent = '❌ Telegram WebApp API не найден.\n\n' +
-        'Убедитесь, что бот открыт через ссылку:\n' +
-        'https://t.me/YOUR_BOT_USERNAME?startapp\n' +
-        'и настроен домен через /setdomain';
-    }
+      if (window.Telegram?.WebApp) {
+        const data = {
+          initData: Telegram.WebApp.initData,
+          parsed: Telegram.WebApp.initDataUnsafe,
+          userAgent: navigator.userAgent
+        };
+
+        output.textContent = JSON.stringify(data, null, 2);
+      } else {
+        output.textContent = `❌ Telegram WebApp API не найден.\n\n` +
+          `UserAgent: ${navigator.userAgent}\n\n` +
+          `Убедитесь, что бот открыт через ссылку:\n` +
+          `https://t.me/ViniRemAdmPan_bot?startapp\n` +
+          `и настроен домен через /setdomain`;
+      }
     });
   </script>
 </body>
