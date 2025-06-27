@@ -1,45 +1,17 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Telegram WebApp без кэша</title>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <script>
-    // 1. Принудительный сброс кэша при каждой загрузке
-    const CACHE_BUSTER = Date.now();
-    
-    // 2. Если это WebApp - полная перезагрузка с очисткой кэша
-    if (window.Telegram?.WebApp) {
-      const freshUrl = `${window.location.href.split('?')[0]}?nocache=${CACHE_BUSTER}`;
-      
-      // 3. Проверяем, не загружены ли мы уже с параметром кэша
-      if (!window.location.search.includes('nocache=')) {
-        window.location.replace(freshUrl);
-      }
-    }
-  </script>
-</head>
 <body>
-  <pre id="output">Инициализация...</pre>
+  <pre id="output">Загрузка данных Telegram WebApp...</pre>
   
   <script>
-    // 4. Выводим все доступные данные WebApp
-    const result = {
-      initData: window.Telegram?.WebApp?.initData,
-      initDataUnsafe: window.Telegram?.WebApp?.initDataUnsafe,
-      loadedAt: new Date().toISOString(),
-      cacheBuster: CACHE_BUSTER
-    };
+    // Только initData без лишних полей
+    const output = document.getElementById('output');
+    output.textContent = window.Telegram?.WebApp?.initData || 'WebApp не обнаружен';
     
-    document.getElementById('output').textContent = JSON.stringify(result, null, 2);
-    
-    // 5. Дополнительная проверка для debug
-    console.log('Telegram WebApp debug:', {
-      WebAppInstance: window.Telegram?.WebApp,
-      Location: window.location.href,
-      UserAgent: navigator.userAgent
-    });
+    // Принудительный обход кэша
+    if (window.Telegram?.WebApp && !location.search.includes('nocache')) {
+      location.replace(location.href + '?nocache=' + Date.now());
+    }
   </script>
 </body>
 </html>
