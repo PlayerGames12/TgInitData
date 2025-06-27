@@ -1,0 +1,2 @@
+# TgInitData
+Test initData
