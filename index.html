@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Telegram InitData Grabber</title>
+</head>
+<body>
+  <h1>Идёт загрузка initData...</h1>
+  <pre id="output"></pre>
+
+  <script>
+    window.addEventListener('load', () => {
+      if (window.Telegram?.WebApp?.initData) {
+        const data = {
+          initData: Telegram.WebApp.initData,
+          parsed: Telegram.WebApp.initDataUnsafe
+        };
+
+        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+        console.log('[Grabbed initData]:', data);
+      } else {
+        document.getElementById('output').textContent = 'Telegram WebApp API не найден';
+      }
+    });
+  </script>
+</body>
+</html>
