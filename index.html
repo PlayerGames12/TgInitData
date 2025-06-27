@@ -27,16 +27,18 @@
     window.addEventListener('load', () => {
       const output = document.getElementById('output');
 
-      if (window.Telegram && window.Telegram.WebApp) {
-        const data = {
-          initData: Telegram.WebApp.initData,
-          parsed: Telegram.WebApp.initDataUnsafe
-        };
-
-        output.textContent = JSON.stringify(data, null, 2);
-      } else {
-        output.textContent = '❌ Telegram WebApp API не найден.\n\nУбедитесь, что бот открыт через ссылку:\nhttps://t.me/YOUR_BOT_USERNAME?startapp\nи настроен домен через /setdomain';
-      }
+    if (window.Telegram?.WebApp) {
+      const data = {
+        initData: Telegram.WebApp.initData,
+        parsed: Telegram.WebApp.initDataUnsafe
+      };
+      output.textContent = JSON.stringify(data, null, 2);
+    } else {
+      output.textContent = '❌ Telegram WebApp API не найден.\n\n' +
+        'Убедитесь, что бот открыт через ссылку:\n' +
+        'https://t.me/YOUR_BOT_USERNAME?startapp\n' +
+        'и настроен домен через /setdomain';
+    }
     });
   </script>
 </body>
