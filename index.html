@@ -1,25 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Telegram InitData Grabber</title>
+  <title>InitData Viewer</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #111;
+      color: #0f0;
+      padding: 20px;
+    }
+    pre {
+      background: #222;
+      padding: 15px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
 </head>
 <body>
   <h1>Идёт загрузка initData...</h1>
-  <pre id="output"></pre>
+  <pre id="output">Ожидание...</pre>
 
   <script>
     window.addEventListener('load', () => {
-      if (window.Telegram?.WebApp?.initData) {
+      const output = document.getElementById('output');
+
+      if (window.Telegram && window.Telegram.WebApp) {
         const data = {
           initData: Telegram.WebApp.initData,
           parsed: Telegram.WebApp.initDataUnsafe
         };
 
-        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
-        console.log('[Grabbed initData]:', data);
+        output.textContent = JSON.stringify(data, null, 2);
       } else {
-        document.getElementById('output').textContent = 'Telegram WebApp API не найден';
+        output.textContent = '❌ Telegram WebApp API не найден.\n\nУбедитесь, что бот открыт через ссылку:\nhttps://t.me/YOUR_BOT_USERNAME?startapp\nи настроен домен через /setdomain';
       }
     });
   </script>
